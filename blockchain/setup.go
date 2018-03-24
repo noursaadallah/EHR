@@ -32,7 +32,7 @@ type FabricSetup struct {
 }
 
 const (
-	ccVersion = "1.2.0"
+	ccVersion = "1.2.6"
 )
 
 // Initialize reads the configuration file and sets up the client, chain and event hub

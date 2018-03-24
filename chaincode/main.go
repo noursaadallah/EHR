@@ -1,11 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
+
+// EHR : Electronic Health Record
+type EHR struct {
+	ID                string `json:"id"`
+	Firstname         string `json:"firstname"`
+	Lastname          string `json:"lastname"`
+	SocialSecurityNum string `json:"socialSecurityNum"`
+	Birthday          string `json:"birthday"`
+}
 
 // HeroesServiceChaincode implementation of Chaincode
 type HeroesServiceChaincode struct {
@@ -25,8 +35,20 @@ func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Respo
 		return shim.Error("Unknown function call")
 	}
 
+	var ehr EHR
+	ehr.ID = "ID"
+	ehr.Firstname = "firstname"
+	ehr.Lastname = "lastname"
+	ehr.SocialSecurityNum = "socialsecuritynumber"
+	ehr.Birthday = "birthday"
+
+	behr, err := json.Marshal(ehr)
+	if err != nil {
+		return shim.Error("error marshalling EHR to Json")
+	}
+
 	// Put in the ledger the key/value hello/world
-	err := stub.PutState("hello", []byte("world"))
+	err = stub.PutState("hello", behr)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
