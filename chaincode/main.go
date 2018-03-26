@@ -3,18 +3,33 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
+const (
+	layout = "2006-01-02"
+)
+
 // EHR : Electronic Health Record
 type EHR struct {
-	ID                string `json:"id"`
-	Firstname         string `json:"firstname"`
-	Lastname          string `json:"lastname"`
-	SocialSecurityNum string `json:"socialSecurityNum"`
-	Birthday          string `json:"birthday"`
+	ID                string        `json:"id"`
+	Firstname         string        `json:"firstname"`
+	Lastname          string        `json:"lastname"`
+	SocialSecurityNum string        `json:"socialSecurityNum"`
+	Birthday          time.Time     `json:"birthday"`
+	Appointments      []Appointment `json:"visits"`
+	DocType           string        `json:"docType"` //meta
+}
+
+// Appointment public for access outside the CC
+type Appointment struct {
+	DrID    string    `json:"drId"`
+	Date    time.Time `json:"date"`
+	Comment string    `json:"comment"`
+	DocType string    `json:"docType"` //meta
 }
 
 // HeroesServiceChaincode implementation of Chaincode
@@ -40,7 +55,9 @@ func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Respo
 	ehr.Firstname = "firstname"
 	ehr.Lastname = "lastname"
 	ehr.SocialSecurityNum = "socialsecuritynumber"
-	ehr.Birthday = "birthday"
+	ehr.Birthday = time.Now()
+	ehr.Appointments = nil
+	ehr.DocType = "ehr"
 
 	behr, err := json.Marshal(ehr)
 	if err != nil {
@@ -127,11 +144,13 @@ func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args [
 		return shim.Error("The number of arguments is insufficient.")
 	}
 
+	ehrID := args[1] //stub.GetTxID
+	value := args[2]
 	// Check if the ledger key is "hello" and process if it is the case. Otherwise it returns an error.
-	if args[1] == "hello" && len(args) == 3 {
+	if ehrID == "hello" && len(args) == 3 {
 
 		// Write the new value in the ledger
-		err := stub.PutState("hello", []byte(args[2]))
+		err := stub.PutState(ehrID, []byte(value))
 		if err != nil {
 			return shim.Error("Failed to update state of hello")
 		}

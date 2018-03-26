@@ -32,7 +32,7 @@ type FabricSetup struct {
 }
 
 const (
-	ccVersion = "1.2.6"
+	ccVersion = "1.2.8"
 )
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
@@ -93,6 +93,7 @@ func (setup *FabricSetup) Initialize() error {
 	return nil
 }
 
+// InstallAndInstantiateCC on the nodes
 func (setup *FabricSetup) InstallAndInstantiateCC() error {
 
 	// Create a new go lang chaincode package and initializing it with our chaincode

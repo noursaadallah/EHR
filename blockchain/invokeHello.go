@@ -1,6 +1,6 @@
 package blockchain
 
-// InvokeHello
+// InvokeHello : change hello value
 func (setup *FabricSetup) InvokeHello(value string) (string, error) {
 
 	// Prepare arguments

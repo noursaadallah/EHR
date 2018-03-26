@@ -7,7 +7,7 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/api/apitxn/chclient"
 )
 
-// Invoke
+// Invoke : generic Invoke to change state
 func (setup *FabricSetup) Invoke(funcName string, args []string) (string, error) {
 
 	var byteArgs [][]byte
@@ -25,7 +25,7 @@ func (setup *FabricSetup) Invoke(funcName string, args []string) (string, error)
 	notifier := make(chan *chclient.CCEvent)
 	rce, err := setup.client.RegisterChaincodeEvent(notifier, setup.ChainCodeID, eventID)
 	if err != nil {
-		return "", fmt.Errorf("failed to register chaincode evet: %v", err)
+		return "", fmt.Errorf("failed to register chaincode event: %v", err)
 	}
 
 	// Create a request (proposal) and send it
@@ -51,7 +51,7 @@ func (setup *FabricSetup) Invoke(funcName string, args []string) (string, error)
 	return response.TransactionID.ID, nil
 }
 
-// Query query the chaincode to get the state of
+// Query query the chaincode to get the state of key
 func (setup *FabricSetup) Query(funcName string, args []string) (string, error) {
 
 	// Prepare arguments
