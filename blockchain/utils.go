@@ -41,7 +41,7 @@ func (setup *FabricSetup) Invoke(funcName string, args []string) (string, error)
 	select {
 	case ccEvent := <-notifier:
 		fmt.Printf("Received CC event: %s\n", ccEvent)
-	case <-time.After(time.Second * 20):
+	case <-time.After(time.Second * 30):
 		return "", fmt.Errorf("did NOT receive CC event for eventId(%s)", eventID)
 	}
 

@@ -1,0 +1,40 @@
+{{define "title"}}Create EHR{{end}}
+
+{{define "body"}}
+<h1>Create EHR</h1>
+
+{{ if .Response }}
+{{ if .Success }}
+<div class="alert alert-success" role="alert">
+    Successful request, transaction ID: {{ .TransactionId }}
+</div>
+{{ else }}
+<div class="alert alert-danger" role="alert">
+    Unable to submit the request, retry later.
+</div>
+{{ end }}
+{{ end }}
+
+<form class="form-inline" action="createEHR.html" method="post">
+    <div class="col-lg-12">
+        <label for="firstName" class="col-lg-4">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName" class="col-lg-4"><br>
+
+        <label for="lastName" class="col-lg-4">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="lastName" class="col-lg-4"><br>
+
+        <label for="socialSecNbr" class="col-lg-4">Social Security Number</label>
+        <input type="text" class="form-control" id="socialSecNbr" name="socialSecNbr" class="col-lg-4"><br>
+
+        <label for="birthday" class="col-lg-4">Birthday</label>
+        <input type="text" class="form-control" id="birthday" name="birthday" class="col-lg-4"><br>
+    </div>
+    <br>
+
+    <input type="hidden" name="submitted" value="true">
+    <button type="submit" class="btn btn-default">Send the request</button>
+
+</form>
+<br>
+<a href="home.html">Back to Home</a>
+{{end}}

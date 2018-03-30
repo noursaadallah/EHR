@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -21,7 +22,6 @@ type EHR struct {
 	SocialSecurityNum string        `json:"socialSecurityNum"`
 	Birthday          time.Time     `json:"birthday"`
 	Appointments      []Appointment `json:"visits"`
-	DocType           string        `json:"docType"` //meta
 }
 
 // Appointment public for access outside the CC
@@ -29,7 +29,6 @@ type Appointment struct {
 	DrID    string    `json:"drId"`
 	Date    time.Time `json:"date"`
 	Comment string    `json:"comment"`
-	DocType string    `json:"docType"` //meta
 }
 
 // HeroesServiceChaincode implementation of Chaincode
@@ -57,7 +56,6 @@ func (t *HeroesServiceChaincode) Init(stub shim.ChaincodeStubInterface) pb.Respo
 	ehr.SocialSecurityNum = "socialsecuritynumber"
 	ehr.Birthday = time.Now()
 	ehr.Appointments = nil
-	ehr.DocType = "ehr"
 
 	behr, err := json.Marshal(ehr)
 	if err != nil {
@@ -81,6 +79,16 @@ func (t *HeroesServiceChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Res
 
 	// Get the function and arguments from the request
 	function, args := stub.GetFunctionAndParameters()
+
+	// Handle different functions
+	switch function {
+	case "createEHR":
+		return createEHR(stub, args)
+	case "getEHR":
+		return getEHR(stub, args)
+	case "updateEHR":
+		return updateEHR(stub, args)
+	}
 
 	// Check whether it is an invoke request
 	if function != "invoke" {
@@ -167,6 +175,152 @@ func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args [
 
 	// If the arguments given don’t match any function, we return an error
 	return shim.Error("Unknown invoke action, check the second argument.")
+}
+
+// ==========================================================================================
+//	createEHR- create a donor-recipient pair of health records
+// ==========================================================================================
+func createEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var err error
+	fmt.Println("running the function createPair()")
+
+	if len(args) != 4 {
+		return shim.Error("Wrong input")
+	}
+
+	var ehr EHR
+	ehrID := stub.GetTxID()
+	ehr.ID = ehrID
+	ehr.Firstname = args[0]
+	ehr.Lastname = args[1]
+	ehr.SocialSecurityNum = args[2]
+	ehr.Birthday, err = time.Parse(layout, args[3])
+	ehr.Appointments = nil
+
+	if err != nil {
+		return shim.Error("Error parsing birthday")
+	}
+
+	jsonEHR, err := json.Marshal(ehr)
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error("Error marshalling to JSON")
+	}
+
+	err = stub.PutState(ehrID, jsonEHR)
+	if err != nil {
+		return shim.Error("createEHR() : Error writing to state")
+	}
+
+	// Notify listeners that an event "eventInvoke" have been executed
+	err = stub.SetEvent("eventInvoke", []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success([]byte(ehrID))
+}
+
+// ==========================================================================================
+// getEHR : query to get a EHR by its key
+// ==========================================================================================
+func getEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var ehrID string
+	var err error
+
+	if len(args) != 1 {
+		return shim.Error("Wrong input")
+	}
+	ehrID = args[0]
+	valAsbytes, err := stub.GetState(ehrID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error(err.Error())
+	} else if valAsbytes == nil {
+		fmt.Println("EHR does not exist")
+		return shim.Error("EHR does not exist")
+	}
+
+	return shim.Success(valAsbytes)
+}
+
+// ==========================================================================================
+// updateEHR : get a EHR by its key and add a Appointment (drId + date + comment)
+// ==========================================================================================
+func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var ehrID string
+	var err error
+	var ehr *EHR
+
+	if len(args) != 4 { // ehrID, DrID, date, comment
+		return shim.Error("Wrong input")
+	}
+	ehrID = args[0]
+	ehr, err = getEHRbyID(stub, ehrID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error(err.Error())
+	}
+	err = ehr.addAppointment(args[1], args[2], args[3])
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error(err.Error())
+	}
+
+	jsonEHR, err := json.Marshal(ehr)
+	if err != nil {
+		fmt.Println(err.Error())
+		return shim.Error("error marshalling json" + err.Error())
+	}
+
+	err = stub.PutState(ehrID, jsonEHR)
+	if err != nil {
+		return shim.Error("updateEHR() : Error put state")
+	}
+
+	// Notify listeners that an event "eventInvoke" have been executed
+	err = stub.SetEvent("eventInvoke", []byte{})
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(jsonEHR)
+}
+
+// ==========================================================================================
+// add Appointment (date + comment) to EHR
+// ==========================================================================================
+func (ehr *EHR) addAppointment(DrID string, date string, comment string) error {
+
+	_date, err := time.Parse(layout, date)
+	if err != nil {
+		fmt.Println("Error parsing date : " + err.Error())
+		return err
+	}
+	ehr.Appointments = append(ehr.Appointments, Appointment{DrID, _date, comment})
+	return nil
+}
+
+// ==========================================================================================
+// getEHRbyID : get the EHR object by ID - Auxiliary function
+// ==========================================================================================
+func getEHRbyID(stub shim.ChaincodeStubInterface, ID string) (*EHR, error) {
+	valAsbytes, err := stub.GetState(ID)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	} else if valAsbytes == nil {
+		return nil, errors.New("EHR does not exist")
+	}
+
+	var ehr EHR
+	err = json.Unmarshal(valAsbytes, &ehr)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, errors.New("Error unmarshalling JSON")
+	}
+
+	return &ehr, nil
 }
 
 func main() {
