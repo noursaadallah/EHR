@@ -35,6 +35,19 @@
     <tr><th>Birthday</th> <td>{{.EHR.Birthday.Format "02/01/2006" }}</td></tr>
 </table>
 
+{{if .EHR.Appointments}}
+<h4>List of appointments</h4>
+{{range .EHR.Appointments}}
+
+<table class="table table-condensed table-bordered">
+    <tr><th>Doctor ID</th> <td>{{.DrID}}</td>  </tr>
+    <tr><th>Comment</th> <td>{{.Comment}}</td>   </tr>
+    <tr><th>Date</th> <td>{{.Date.Format "02/01/2006 15:04 MST" }}</td>  </tr>
+</table>
+
+{{end}}
+{{end}}
+
 {{ end }}
 {{ end }}
 

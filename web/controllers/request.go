@@ -7,11 +7,11 @@ import (
 // RequestHandler : controller to change hello state
 func (app *Application) RequestHandler(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
-		TransactionId string
+		TransactionID string
 		Success       bool
 		Response      bool
 	}{
-		TransactionId: "",
+		TransactionID: "",
 		Success:       false,
 		Response:      false,
 	}
@@ -21,7 +21,7 @@ func (app *Application) RequestHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, "Unable to invoke hello in the blockchain", 500)
 		}
-		data.TransactionId = txid
+		data.TransactionID = txid
 		data.Success = true
 		data.Response = true
 	}

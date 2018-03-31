@@ -212,7 +212,7 @@ func createEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		return shim.Error("createEHR() : Error writing to state")
 	}
 
-	// Notify listeners that an event "eventInvoke" have been executed
+	// Notify listeners that an event "eventInvoke" has been executed
 	err = stub.SetEvent("eventInvoke", []byte{})
 	if err != nil {
 		return shim.Error(err.Error())
@@ -252,7 +252,7 @@ func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
 	var ehr *EHR
 
-	if len(args) != 4 { // ehrID, DrID, date, comment
+	if len(args) != 3 { // ehrID, DrID, comment
 		return shim.Error("Wrong input")
 	}
 	ehrID = args[0]
@@ -261,7 +261,11 @@ func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		fmt.Println(err.Error())
 		return shim.Error(err.Error())
 	}
-	err = ehr.addAppointment(args[1], args[2], args[3])
+	if ehr == nil {
+		fmt.Println("Error reading state : EHR is nil")
+		return shim.Error("nil ehr")
+	}
+	err = ehr.addAppointment(args[1], args[2])
 	if err != nil {
 		fmt.Println(err.Error())
 		return shim.Error(err.Error())
@@ -278,7 +282,7 @@ func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 		return shim.Error("updateEHR() : Error put state")
 	}
 
-	// Notify listeners that an event "eventInvoke" have been executed
+	// Notify listeners that an event "eventInvoke" has been executed
 	err = stub.SetEvent("eventInvoke", []byte{})
 	if err != nil {
 		return shim.Error(err.Error())
@@ -290,14 +294,16 @@ func updateEHR(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 // ==========================================================================================
 // add Appointment (date + comment) to EHR
 // ==========================================================================================
-func (ehr *EHR) addAppointment(DrID string, date string, comment string) error {
+func (ehr *EHR) addAppointment(DrID string, comment string) error {
 
-	_date, err := time.Parse(layout, date)
-	if err != nil {
-		fmt.Println("Error parsing date : " + err.Error())
-		return err
-	}
-	ehr.Appointments = append(ehr.Appointments, Appointment{DrID, _date, comment})
+	_now := time.Now()
+	yyyy := _now.Year()
+	MM := _now.Month()
+	dd := _now.Day()
+	hh := _now.Hour()
+	mm := _now.Minute()
+	_now = time.Date(yyyy, MM, dd, hh, mm, 0, 0, time.UTC)
+	ehr.Appointments = append(ehr.Appointments, Appointment{DrID, _now, comment})
 	return nil
 }
 

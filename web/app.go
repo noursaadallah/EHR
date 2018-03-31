@@ -16,9 +16,10 @@ func Serve(app *controllers.Application) {
 	http.HandleFunc("/request.html", app.RequestHandler)
 	http.HandleFunc("/createEHR.html", app.CreateEHRhandler)
 	http.HandleFunc("/getEHR.html", app.GetEHRhandler)
+	http.HandleFunc("/updateEHR.html", app.UpdateEHRhandler)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/home.html", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/createEHR.html", http.StatusTemporaryRedirect)
 	})
 
 	fmt.Println("Listening (http://localhost:3000/) ...")
