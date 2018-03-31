@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// HomeHandler : Controller to query hello
 func (app *Application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	helloValue, err := app.Fabric.QueryHello()
 	if err != nil {

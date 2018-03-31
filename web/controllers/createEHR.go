@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// CreateEHRhandler : controller to createEHR
 func (app *Application) CreateEHRhandler(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
 		TransactionId string

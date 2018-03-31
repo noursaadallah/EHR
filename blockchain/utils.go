@@ -52,7 +52,7 @@ func (setup *FabricSetup) Invoke(funcName string, args []string) (string, error)
 }
 
 // Query query the chaincode to get the state of key
-func (setup *FabricSetup) Query(funcName string, args []string) (string, error) {
+func (setup *FabricSetup) Query(funcName string, args []string) ([]byte, error) {
 
 	// Prepare arguments
 	var byteArgs [][]byte
@@ -65,8 +65,8 @@ func (setup *FabricSetup) Query(funcName string, args []string) (string, error) 
 		Fcn:         funcName,
 		Args:        byteArgs})
 	if err != nil {
-		return "", fmt.Errorf("failed to query: %v", err)
+		return nil, fmt.Errorf("failed to query: %v", err)
 	}
 
-	return string(response.Payload), nil
+	return response.Payload, nil
 }

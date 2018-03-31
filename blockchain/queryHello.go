@@ -9,5 +9,6 @@ func (setup *FabricSetup) QueryHello() (string, error) {
 	args = append(args, "query")
 	args = append(args, "hello")
 
-	return setup.Query(funcName, args)
+	payload, err := setup.Query(funcName, args)
+	return string(payload), err
 }

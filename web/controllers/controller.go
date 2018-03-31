@@ -10,6 +10,7 @@ import (
 	"github.com/noursaadallah/EHR/blockchain"
 )
 
+// Application : uses FabricSetup to perform actions
 type Application struct {
 	Fabric *blockchain.FabricSetup
 }

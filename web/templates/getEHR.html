@@ -1,0 +1,43 @@
+{{define "title"}}Get EHR{{end}}
+
+{{define "body"}}
+<h1>Get EHR</h1>
+
+{{ if .Response }}
+{{ if .Success }}
+<div class="alert alert-success" role="alert">
+    Successful request, ehr ID: {{ .EHR.ID }}
+</div>
+{{ else }}
+<div class="alert alert-danger" role="alert">
+    Unable to submit the request, retry later.
+</div>
+{{ end }}
+{{ end }}
+
+<form class="form-inline" action="getEHR.html" method="post">
+    <div class="form-group">
+        <label for="ehrID">EHR ID</label>
+        <input type="text" class="form-control" id="ehrID" name="ehrID">
+    </div>
+    <input type="hidden" name="submitted" value="true">
+    <button type="submit" class="btn btn-default">Send the request</button>
+</form>
+<br>
+
+{{ if .Response }}
+{{ if .Success }}
+<table class="table table-condensed table-bordered">
+    <tr><th>EHR ID</th> <td>{{.EHR.ID}}</td>  </tr>
+    <tr><th>Firstname</th> <td>{{.EHR.Firstname}}</td>   </tr>
+    <tr><th>Lastname</th> <td>{{.EHR.Lastname}}</td>  </tr>
+    <tr><th>Social Security Number</th> <td>{{.EHR.SocialSecurityNum}}</td> </tr>
+    <tr><th>Birthday</th> <td>{{.EHR.Birthday.Format "02/01/2006" }}</td></tr>
+</table>
+
+{{ end }}
+{{ end }}
+
+<br><br>
+<a href="home.html">Back to Home</a>
+{{end}}

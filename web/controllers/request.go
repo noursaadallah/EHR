@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// RequestHandler : controller to change hello state
 func (app *Application) RequestHandler(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
 		TransactionId string
