@@ -143,7 +143,7 @@ sudo apt install libltdl-dev
 
 The testing process can take some time depending on your network connection. What it does is first build a virtual network and download the docker images to do so then run some tests to check if the environment is ready and properly configured.
 
-## 3. Download and run the app 
+## 3. Download and run the app
 
 All you need to do now is to create a new directory in the `src` folder of your `GOPATH`, following this repository name.
 
@@ -160,7 +160,7 @@ Hyperledger Fabric needs a lot of certificates to ensure encryption during the w
 
 The steps that were ran are as follows:
 
-1. run the command `docker-compose up`. Which will instanciate nodes according to the configuration in `fixtures/docker-compose.yaml`. If you run `docker ps` you will see two peers, one orderer and one CA containers running. To check the different roles you can see the [official documentation](http://hyperledger-fabric.readthedocs.io/en/release-1.1/arch-deep-dive.html#client).
+1. Run the command `docker-compose up`. Which will instanciate nodes according to the configuration in `fixtures/docker-compose.yaml`. If you run `docker ps` you will see two peers, one orderer and one CA containers running. To check the different roles you can see the [official documentation](http://hyperledger-fabric.readthedocs.io/en/release-1.1/arch-deep-dive.html#client).
 And to see in more detail how to create a network you can see [Building your first network](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html)
 2. Initialise a client that can communicate to the nodes of the network. The corresponding configuration file is `config.yaml` and the corresponding initialisation code is in `blockchain/setup.go`.
 3. Download and flatten all the dependencies (`Gopks.toml`), then build the app.
