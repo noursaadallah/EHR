@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -157,6 +158,8 @@ func (t *HeroesServiceChaincode) invoke(stub shim.ChaincodeStubInterface, args [
 	// Check if the ledger key is "hello" and process if it is the case. Otherwise it returns an error.
 	if ehrID == "hello" && len(args) == 3 {
 
+		// Add random suffix to the value
+		value = value + strconv.Itoa(time.Now().Nanosecond())
 		// Write the new value in the ledger
 		err := stub.PutState(ehrID, []byte(value))
 		if err != nil {
