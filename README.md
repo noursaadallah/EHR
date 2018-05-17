@@ -143,7 +143,7 @@ sudo apt install libltdl-dev
 
 The testing process can take some time depending on your network connection. What it does is first build a virtual network and download the docker images to do so then run some tests to check if the environment is ready and properly configured.
 
-## 3. Download and run the app
+## 3. Download and Run the App
 
 All you need to do now is to create a new directory in the `src` folder of your `GOPATH`, following this repository name.
 
