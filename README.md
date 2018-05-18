@@ -8,7 +8,7 @@ Special thanks goes to [chainHero](https://github.com/chainHero) for sharing his
 
 The blockchain technology used for this application is Hyperledger Fabric. In this tutorial I won't explain in detail how the technology works, just enough so that you can install this application and have a blockchain network up and running.
 
-This application was developed on **Ubuntu 16.04**, but Hyperledger Fabric is compatible with Max OS X, Windows and other Linux distributions. You can check the [official documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) to see the functionalities of Fabric and what you can do with it.
+This application was developed on **Ubuntu 16.04**, but Hyperledger Fabric is compatible with Mac OS X, Windows and other Linux distributions. You can check the [official documentation](http://hyperledger-fabric.readthedocs.io/en/latest/) to see the functionalities of Fabric and what you can do with it.
 
 We used the **Google Go** language to develop the whole stack of the application, because it's the initial supported language by Fabric and I find it easier to use. You can choose other supported languages if you prefer like *Java* or *Python* or *JavaScript*.
 
